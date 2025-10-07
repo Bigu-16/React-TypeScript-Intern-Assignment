@@ -31,7 +31,7 @@ const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
       onClose={onCancel}
       PaperProps={{
         sx: {
-          borderRadius: 4,
+          borderRadius: 1,
           background: theme.palette.background.paper,
           color: theme.palette.text.primary,
         },

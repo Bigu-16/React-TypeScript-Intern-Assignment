@@ -81,7 +81,7 @@ const UserTable: React.FC<UserTableProps> = ({
     <Box
       sx={(theme) => ({
         background: theme.palette.mode === "light" ? "#e3f2fd" : "#18213a", // unified with table cell
-        borderRadius: 3,
+        borderRadius: 1,
         p: 3,
         boxShadow: 3,
         border: `1.5px solid ${
@@ -119,15 +119,21 @@ const UserTable: React.FC<UserTableProps> = ({
               width: 300,
               borderRadius: 1,
               background:
-                theme.palette.mode === "light" ? "#c7e0fa" : "#101624",
-              color: "#fff",
+                theme.palette.mode === "light" ? "#e3f2fd" : "#18213a",
+              color: theme.palette.mode === "light" ? "#023562" : "#e0e0e0",
               boxShadow: 1,
-              input: { color: "#fff" },
-              "& .MuiInputBase-input": { color: "#fff" },
+              input: {
+                color: theme.palette.mode === "light" ? "#023562" : "#e0e0e0",
+              },
+              "& .MuiInputBase-input": {
+                color: theme.palette.mode === "light" ? "#023562" : "#e0e0e0",
+              },
+              "& .MuiOutlinedInput-root": { borderRadius: 1 },
             }}
             InputProps={{
               style: {
-                color: "#fff",
+                color: theme.palette.mode === "light" ? "#023562" : "#e0e0e0",
+                borderRadius: 1,
               },
             }}
           />
@@ -254,12 +260,12 @@ const UserTable: React.FC<UserTableProps> = ({
                           display: "inline-block",
                           px: 2,
                           py: 0.5,
-                          borderRadius: 2,
+                          borderRadius: 1,
                           background:
                             user.role === "Admin"
                               ? "#1976d2" // main blue
                               : user.role === "Manager"
-                              ? "#1565c0" // darker blue
+                              ? "#00509e" // more distinct blue for Manager
                               : "#90caf9", // light blue
                           color: "#fff",
                           fontWeight: 500,

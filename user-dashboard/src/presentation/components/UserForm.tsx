@@ -34,6 +34,7 @@ const UserForm: React.FC<UserFormProps> = ({
     email: "",
     role: roles[0],
   });
+  const [emailError, setEmailError] = useState<string>("");
 
   useEffect(() => {
     if (initialData) {
@@ -45,11 +46,20 @@ const UserForm: React.FC<UserFormProps> = ({
 
   const handleChange =
     (field: keyof User) => (e: React.ChangeEvent<HTMLInputElement>) => {
-      setFormData((prev) => ({ ...prev, [field]: e.target.value }));
+      const value = e.target.value;
+      setFormData((prev) => ({ ...prev, [field]: value }));
+      if (field === "email") {
+        // Simple email validation
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        setEmailError(
+          emailRegex.test(value) ? "" : "Please enter a valid email address"
+        );
+      }
     };
 
   const handleSubmit = () => {
-    if (!formData.name || !formData.email || !formData.role) return;
+    if (!formData.name || !formData.email || !formData.role || emailError)
+      return;
     onSubmit(formData);
     onClose();
   };
@@ -62,7 +72,7 @@ const UserForm: React.FC<UserFormProps> = ({
       maxWidth="xs"
       PaperProps={{
         sx: {
-          borderRadius: 4,
+          borderRadius: 1,
           background: theme.palette.background.paper,
           color: theme.palette.text.primary,
         },
@@ -73,7 +83,7 @@ const UserForm: React.FC<UserFormProps> = ({
           color: "primary.main",
           fontWeight: 700,
           textAlign: "center",
-          borderRadius: 2,
+          borderRadius: 1,
         }}
       >
         {initialData ? "Edit User" : "Add User"}
@@ -89,14 +99,26 @@ const UserForm: React.FC<UserFormProps> = ({
             value={formData.name}
             onChange={handleChange("name")}
             required
+            variant="filled"
             sx={{
-              borderRadius: 2,
+              borderRadius: 1,
               background:
                 theme.palette.mode === "light" ? "#c7e0fa" : "#101624",
               input: { color: "#fff" },
               "& .MuiInputBase-input": { color: "#fff" },
+              "& .MuiFilledInput-root": {
+                borderRadius: 1,
+                background: "none",
+                boxShadow: "none",
+                border: "none",
+              },
+              "& .MuiFilledInput-underline:before, & .MuiFilledInput-underline:after":
+                { borderBottom: "none" },
             }}
-            InputProps={{ style: { color: "#fff" } }}
+            InputProps={{
+              disableUnderline: true,
+              style: { color: "#fff", borderRadius: 1 },
+            }}
           />
           <TextField
             label={
@@ -108,14 +130,28 @@ const UserForm: React.FC<UserFormProps> = ({
             value={formData.email}
             onChange={handleChange("email")}
             required
+            error={!!emailError}
+            helperText={emailError}
+            variant="filled"
             sx={{
-              borderRadius: 2,
+              borderRadius: 1,
               background:
                 theme.palette.mode === "light" ? "#c7e0fa" : "#101624",
               input: { color: "#fff" },
               "& .MuiInputBase-input": { color: "#fff" },
+              "& .MuiFilledInput-root": {
+                borderRadius: 1,
+                background: "none",
+                boxShadow: "none",
+                border: "none",
+              },
+              "& .MuiFilledInput-underline:before, & .MuiFilledInput-underline:after":
+                { borderBottom: "none" },
             }}
-            InputProps={{ style: { color: "#fff" } }}
+            InputProps={{
+              disableUnderline: true,
+              style: { color: "#fff", borderRadius: 1 },
+            }}
           />
           <TextField
             label={
@@ -127,14 +163,26 @@ const UserForm: React.FC<UserFormProps> = ({
             value={formData.role}
             onChange={handleChange("role")}
             required
+            variant="filled"
             sx={{
-              borderRadius: 2,
+              borderRadius: 1,
               background:
                 theme.palette.mode === "light" ? "#c7e0fa" : "#101624",
               input: { color: "#fff" },
               "& .MuiInputBase-input": { color: "#fff" },
+              "& .MuiFilledInput-root": {
+                borderRadius: 1,
+                background: "none",
+                boxShadow: "none",
+                border: "none",
+              },
+              "& .MuiFilledInput-underline:before, & .MuiFilledInput-underline:after":
+                { borderBottom: "none" },
             }}
-            InputProps={{ style: { color: "#fff" } }}
+            InputProps={{
+              disableUnderline: true,
+              style: { color: "#fff", borderRadius: 1 },
+            }}
           >
             {roles.map((role) => (
               <MenuItem key={role} value={role}>
@@ -149,7 +197,7 @@ const UserForm: React.FC<UserFormProps> = ({
           onClick={onClose}
           variant="outlined"
           color="secondary"
-          sx={{ borderRadius: 2, fontWeight: 600 }}
+          sx={{ borderRadius: 1, fontWeight: 600 }}
         >
           Cancel
         </Button>
@@ -157,7 +205,7 @@ const UserForm: React.FC<UserFormProps> = ({
           onClick={handleSubmit}
           variant="contained"
           color="primary"
-          sx={{ borderRadius: 2, fontWeight: 600 }}
+          sx={{ borderRadius: 1, fontWeight: 600 }}
         >
           {initialData ? "Update" : "Add"}
         </Button>
