@@ -8,7 +8,7 @@ import UserForm from "../components/UserForm";
 import ConfirmationDialog from "../components/ConfirmationDialog";
 import { User } from "../../domain/entities/user";
 
-const UsersPage: React.FC = () => {
+const UserPage: React.FC = () => {
   const {
     users,
     loading,
@@ -60,6 +60,8 @@ const UsersPage: React.FC = () => {
     setOpenDeleteDialog(false);
   };
 
+  console.log("UserPage loaded");
+
   return (
     <Box p={3}>
       <Box display="flex" justifyContent="flex-end" mb={2}>
@@ -95,4 +97,4 @@ const UsersPage: React.FC = () => {
   );
 };
 
-export default UsersPage;
+export default UserPage;

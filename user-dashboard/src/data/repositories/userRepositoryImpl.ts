@@ -22,11 +22,19 @@ export class UserRepositoryImpl implements UserRepository {
       throw error;
     }
   }
+
   async updateUser(user: User): Promise<User> {
-    throw new Error("Not implemented yet");
+    // Update user in localStorage
+    const users = JSON.parse(localStorage.getItem("users") || "[]");
+    const updatedUsers = users.map((u: User) => (u.id === user.id ? user : u));
+    localStorage.setItem("users", JSON.stringify(updatedUsers));
+    return user;
   }
 
   async deleteUser(id: number): Promise<void> {
-    throw new Error("Not implemented yet");
+    // Delete user from localStorage
+    const users = JSON.parse(localStorage.getItem("users") || "[]");
+    const updatedUsers = users.filter((u: User) => u.id !== id);
+    localStorage.setItem("users", JSON.stringify(updatedUsers));
   }
 }

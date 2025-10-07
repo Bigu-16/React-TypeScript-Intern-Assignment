@@ -9,7 +9,10 @@ import { UserRepositoryImpl } from "../../data/repositories/userRepositoryImpl";
 // TODO: Implement AddUser use case and import it here
 
 export function useUsers() {
-  const [users, setUsers] = useState<User[]>([]);
+  const [users, setUsers] = useState<User[]>(() => {
+    const saved = localStorage.getItem("users");
+    return saved ? JSON.parse(saved) : [];
+  });
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
@@ -25,6 +28,11 @@ export function useUsers() {
   useEffect(() => {
     fetchUsers();
   }, []);
+
+  // 🔸 Save users to localStorage whenever users change
+  useEffect(() => {
+    localStorage.setItem("users", JSON.stringify(users));
+  }, [users]);
 
   async function fetchUsers() {
     try {

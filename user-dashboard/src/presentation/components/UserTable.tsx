@@ -48,14 +48,14 @@ const UserTable: React.FC<UserTableProps> = ({
   });
 
   return (
-    <Box>
+    <Box sx={{ background: "white", borderRadius: 1, p: 3, boxShadow: 3 }}>
       <Box
         display="flex"
         justifyContent="space-between"
         alignItems="center"
         mb={2}
       >
-        <Typography variant="h5" fontWeight="bold">
+        <Typography variant="h5" fontWeight="bold" color="primary.main">
           User Management
         </Typography>
         <TextField
@@ -64,26 +64,42 @@ const UserTable: React.FC<UserTableProps> = ({
           placeholder="Search by name or email..."
           value={searchTerm}
           onChange={(e) => onSearchChange(e.target.value)}
-          sx={{ width: 300 }}
+          sx={{
+            width: 300,
+            borderRadius: 1,
+            background: "#ffffff",
+            boxShadow: 1,
+          }}
         />
       </Box>
 
       {loading ? (
         <Box display="flex" justifyContent="center" mt={4}>
-          <CircularProgress />
+          <CircularProgress color="primary" />
         </Box>
       ) : (
         <TableContainer
           component={Paper}
-          sx={{ borderRadius: 2, boxShadow: 2 }}
+          sx={{ borderRadius: 1, boxShadow: 4, background: "#f5faff" }}
         >
           <Table>
             <TableHead>
-              <TableRow sx={{ backgroundColor: "#f5f5f5" }}>
-                <TableCell>Name</TableCell>
-                <TableCell>Email</TableCell>
-                <TableCell>Role</TableCell>
-                <TableCell align="right">Actions</TableCell>
+              <TableRow sx={{ backgroundColor: "#023562" }}>
+                <TableCell sx={{ color: "white", fontWeight: 600 }}>
+                  Name
+                </TableCell>
+                <TableCell sx={{ color: "white", fontWeight: 600 }}>
+                  Email
+                </TableCell>
+                <TableCell sx={{ color: "white", fontWeight: 600 }}>
+                  Role
+                </TableCell>
+                <TableCell
+                  align="right"
+                  sx={{ color: "white", fontWeight: 600 }}
+                >
+                  Actions
+                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -95,15 +111,45 @@ const UserTable: React.FC<UserTableProps> = ({
                 </TableRow>
               ) : (
                 filteredUsers.map((user) => (
-                  <TableRow key={user.id} hover>
+                  <TableRow
+                    key={user.id}
+                    hover
+                    sx={{ borderRadius: 3, background: "#ffffff", mb: 1 }}
+                  >
                     <TableCell>{user.name}</TableCell>
                     <TableCell>{user.email}</TableCell>
-                    <TableCell>{user.role}</TableCell>
+                    <TableCell>
+                      <Box
+                        sx={{
+                          display: "inline-block",
+                          px: 2,
+                          py: 0.5,
+                          borderRadius: 2,
+                          background:
+                            user.role === "Admin"
+                              ? "#1976d2"
+                              : user.role === "Manager"
+                              ? "#071eccff"
+                              : "#81cdf6ff",
+                          color: "white",
+                          fontWeight: 500,
+                          fontSize: 13,
+                        }}
+                      >
+                        {user.role}
+                      </Box>
+                    </TableCell>
                     <TableCell align="right">
                       <IconButton
                         color="primary"
                         onClick={() => onEdit(user)}
                         aria-label="edit"
+                        sx={{
+                          borderRadius: 2,
+                          background: "#e3f2fd",
+                          mr: 1,
+                          "&:hover": { background: "#bbdefb" },
+                        }}
                       >
                         <EditIcon />
                       </IconButton>
@@ -111,6 +157,11 @@ const UserTable: React.FC<UserTableProps> = ({
                         color="error"
                         onClick={() => onDelete(user)}
                         aria-label="delete"
+                        sx={{
+                          borderRadius: 2,
+                          background: "#e3f2fd",
+                          "&:hover": { background: "#ffcdd2" },
+                        }}
                       >
                         <DeleteIcon />
                       </IconButton>

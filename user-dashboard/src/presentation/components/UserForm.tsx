@@ -41,9 +41,10 @@ const UserForm: React.FC<UserFormProps> = ({
     }
   }, [initialData]);
 
-  const handleChange = (field: keyof User) => (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData((prev) => ({ ...prev, [field]: e.target.value }));
-  };
+  const handleChange =
+    (field: keyof User) => (e: React.ChangeEvent<HTMLInputElement>) => {
+      setFormData((prev) => ({ ...prev, [field]: e.target.value }));
+    };
 
   const handleSubmit = () => {
     if (!formData.name || !formData.email || !formData.role) return;
@@ -52,8 +53,23 @@ const UserForm: React.FC<UserFormProps> = ({
   };
 
   return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="xs">
-      <DialogTitle>{initialData ? "Edit User" : "Add User"}</DialogTitle>
+    <Dialog
+      open={open}
+      onClose={onClose}
+      fullWidth
+      maxWidth="xs"
+      PaperProps={{ sx: { borderRadius: 4, background: "#f5faff" } }}
+    >
+      <DialogTitle
+        sx={{
+          color: "primary.main",
+          fontWeight: 700,
+          textAlign: "center",
+          borderRadius: 2,
+        }}
+      >
+        {initialData ? "Edit User" : "Add User"}
+      </DialogTitle>
       <DialogContent>
         <Stack spacing={2} mt={1}>
           <TextField
@@ -61,6 +77,7 @@ const UserForm: React.FC<UserFormProps> = ({
             value={formData.name}
             onChange={handleChange("name")}
             required
+            sx={{ borderRadius: 2, background: "#e3f2fd" }}
           />
           <TextField
             label="Email"
@@ -68,6 +85,7 @@ const UserForm: React.FC<UserFormProps> = ({
             value={formData.email}
             onChange={handleChange("email")}
             required
+            sx={{ borderRadius: 2, background: "#e3f2fd" }}
           />
           <TextField
             label="Role"
@@ -75,6 +93,7 @@ const UserForm: React.FC<UserFormProps> = ({
             value={formData.role}
             onChange={handleChange("role")}
             required
+            sx={{ borderRadius: 2, background: "#e3f2fd" }}
           >
             {roles.map((role) => (
               <MenuItem key={role} value={role}>
@@ -84,11 +103,21 @@ const UserForm: React.FC<UserFormProps> = ({
           </TextField>
         </Stack>
       </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose} variant="outlined">
+      <DialogActions sx={{ justifyContent: "space-between", px: 3, pb: 2 }}>
+        <Button
+          onClick={onClose}
+          variant="outlined"
+          color="secondary"
+          sx={{ borderRadius: 2, fontWeight: 600 }}
+        >
           Cancel
         </Button>
-        <Button onClick={handleSubmit} variant="contained">
+        <Button
+          onClick={handleSubmit}
+          variant="contained"
+          color="primary"
+          sx={{ borderRadius: 2, fontWeight: 600 }}
+        >
           {initialData ? "Update" : "Add"}
         </Button>
       </DialogActions>
