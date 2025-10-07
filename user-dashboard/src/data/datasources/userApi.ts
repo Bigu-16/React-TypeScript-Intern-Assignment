@@ -1,11 +1,13 @@
 import axios from "axios";
-import { User } from "../../domain/entities/user"; // 👈 import from domain
+import { API_BASE_URL } from "../../core/constants/apiConstants";
+import { User } from "../../domain/entities/user";
 
 const apiClient = axios.create({
-  baseURL: "https://jsonplaceholder.typicode.com",
+  baseURL: API_BASE_URL,
   headers: {
     "Content-Type": "application/json",
   },
+  timeout: 15000, // 15 seconds timeout
 });
 
 export const getUsers = async (): Promise<User[]> => {
@@ -23,12 +25,16 @@ export const getUsers = async (): Promise<User[]> => {
     }));
 
     return transformedUsers;
-  } catch (error) {
-    console.error("Failed to fetch users:", error);
+  } catch (error: any) {
+    if (error.code === "ECONNABORTED") {
+      console.error(
+        "Request timed out. Please check your network connection or the API endpoint."
+      );
+    } else {
+      console.error("Failed to fetch users:", error);
+    }
     throw error;
   }
 };
 
-export const userApi = {
-  getUsers,
-};
+export const userApi = { getUsers };

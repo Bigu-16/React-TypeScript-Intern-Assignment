@@ -1,8 +1,15 @@
-import { userApi } from "./data/datasources/userApi";
+import { UserRepositoryImpl } from "./data/repositories/userRepositoryImpl";
 
-async function testApi() {
-  const users = await userApi.getUsers();
-  console.log("✅ Users fetched successfully:", users);
+const userRepo = new UserRepositoryImpl();
+
+async function testGetUsers() {
+  try {
+    const users = await userRepo.getUsers();
+    console.log("✅ Users fetched successfully:");
+    console.table(users);
+  } catch (error) {
+    console.error("❌ Error fetching users:", error);
+  }
 }
 
-testApi();
+testGetUsers();
