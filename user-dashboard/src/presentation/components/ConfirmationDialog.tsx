@@ -6,6 +6,7 @@ import {
   DialogContentText,
   DialogActions,
   Button,
+  useTheme,
 } from "@mui/material";
 
 interface ConfirmationDialogProps {
@@ -23,8 +24,19 @@ const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
   onCancel,
   onConfirm,
 }) => {
+  const theme = useTheme();
   return (
-    <Dialog open={open} onClose={onCancel}>
+    <Dialog
+      open={open}
+      onClose={onCancel}
+      PaperProps={{
+        sx: {
+          borderRadius: 4,
+          background: theme.palette.background.paper,
+          color: theme.palette.text.primary,
+        },
+      }}
+    >
       <DialogTitle>{title}</DialogTitle>
       <DialogContent>
         <DialogContentText>{message}</DialogContentText>

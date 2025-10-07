@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   Table,
   TableBody,
@@ -12,9 +12,15 @@ import {
   Box,
   Typography,
   CircularProgress,
+  Menu,
+  MenuItem,
+  Checkbox,
+  ListItemText,
+  useTheme,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import FilterListIcon from "@mui/icons-material/FilterList";
 import { User } from "../../domain/entities/user";
 import { GetUsers } from "../../domain/usecases/getUser";
 import { AddUser } from "../../domain/usecases/addUsers";
@@ -31,6 +37,8 @@ interface UserTableProps {
   onDelete: (user: User) => void;
 }
 
+const roles = ["Admin", "User", "Manager"];
+
 const UserTable: React.FC<UserTableProps> = ({
   users,
   loading,
@@ -39,38 +47,149 @@ const UserTable: React.FC<UserTableProps> = ({
   onEdit,
   onDelete,
 }) => {
+  const theme = useTheme();
+  const [filterAnchorEl, setFilterAnchorEl] = useState<null | HTMLElement>(
+    null
+  );
+  const [selectedRoles, setSelectedRoles] = useState<string[]>([]);
+
+  const handleFilterClick = (event: React.MouseEvent<HTMLElement>) => {
+    setFilterAnchorEl(event.currentTarget);
+  };
+
+  const handleFilterClose = () => {
+    setFilterAnchorEl(null);
+  };
+
+  const handleRoleToggle = (role: string) => {
+    setSelectedRoles((prev) =>
+      prev.includes(role) ? prev.filter((r) => r !== role) : [...prev, role]
+    );
+  };
+
   const filteredUsers = users.filter((user) => {
     const term = searchTerm.toLowerCase();
-    return (
+    const matchesSearch =
       user.name.toLowerCase().includes(term) ||
-      user.email.toLowerCase().includes(term)
-    );
+      user.email.toLowerCase().includes(term);
+    const matchesRole =
+      selectedRoles.length === 0 || selectedRoles.includes(user.role);
+    return matchesSearch && matchesRole;
   });
 
   return (
-    <Box sx={{ background: "white", borderRadius: 1, p: 3, boxShadow: 3 }}>
+    <Box
+      sx={(theme) => ({
+        background: theme.palette.mode === "light" ? "#e3f2fd" : "#18213a", // unified with table cell
+        borderRadius: 3,
+        p: 3,
+        boxShadow: 3,
+        border: `1.5px solid ${
+          theme.palette.mode === "light" ? "#1976d2" : "#023562"
+        }`,
+        transition: "background 0.3s, border 0.3s",
+      })}
+    >
       <Box
         display="flex"
         justifyContent="space-between"
         alignItems="center"
         mb={2}
       >
-        <Typography variant="h5" fontWeight="bold" color="primary.main">
+        <Typography
+          variant="h5"
+          fontWeight="bold"
+          sx={{
+            color: theme.palette.mode === "light" ? "#023562" : "#90caf9",
+            letterSpacing: 1,
+            textShadow:
+              theme.palette.mode === "dark" ? "0 1px 4px #023562" : "none",
+          }}
+        >
           User Management
         </Typography>
-        <TextField
-          size="small"
-          variant="outlined"
-          placeholder="Search by name or email..."
-          value={searchTerm}
-          onChange={(e) => onSearchChange(e.target.value)}
-          sx={{
-            width: 300,
-            borderRadius: 1,
-            background: "#ffffff",
-            boxShadow: 1,
-          }}
-        />
+        <Box display="flex" alignItems="center" gap={1}>
+          <TextField
+            size="small"
+            variant="outlined"
+            placeholder="Search by name or email..."
+            value={searchTerm}
+            onChange={(e) => onSearchChange(e.target.value)}
+            sx={{
+              width: 300,
+              borderRadius: 1,
+              background:
+                theme.palette.mode === "light" ? "#c7e0fa" : "#101624",
+              color: "#fff",
+              boxShadow: 1,
+              input: { color: "#fff" },
+              "& .MuiInputBase-input": { color: "#fff" },
+            }}
+            InputProps={{
+              style: {
+                color: "#fff",
+              },
+            }}
+          />
+          <IconButton
+            aria-label="filter"
+            sx={{
+              ml: 1,
+              color: theme.palette.mode === "light" ? "#1976d2" : "#90caf9",
+              background: "transparent",
+              "&:hover": {
+                background:
+                  theme.palette.mode === "light" ? "#bbdefb" : "#023562",
+                color: "#fff",
+              },
+            }}
+            onClick={handleFilterClick}
+          >
+            <FilterListIcon />
+          </IconButton>
+          <Menu
+            anchorEl={filterAnchorEl}
+            open={Boolean(filterAnchorEl)}
+            onClose={handleFilterClose}
+            PaperProps={{
+              sx: {
+                borderRadius: 2,
+                minWidth: 180,
+                background: theme.palette.background.paper,
+                color: theme.palette.text.primary,
+              },
+            }}
+          >
+            <MenuItem disabled sx={{ fontWeight: 700 }}>
+              Filter by Role
+            </MenuItem>
+            {roles.map((role) => (
+              <MenuItem
+                key={role}
+                onClick={() => handleRoleToggle(role)}
+                sx={{ pl: 2 }}
+              >
+                <Checkbox
+                  checked={selectedRoles.includes(role)}
+                  size="small"
+                  sx={{
+                    color: theme.palette.primary.main,
+                    "&.Mui-checked": {
+                      color: theme.palette.primary.main,
+                    },
+                  }}
+                />
+                <ListItemText primary={role} />
+              </MenuItem>
+            ))}
+            <MenuItem
+              onClick={() => setSelectedRoles([])}
+              sx={{ color: theme.palette.secondary.main, fontWeight: 500 }}
+            >
+              Clear Filters
+            </MenuItem>
+          </Menu>
+        </Box>
       </Box>
 
       {loading ? (
@@ -80,23 +199,27 @@ const UserTable: React.FC<UserTableProps> = ({
       ) : (
         <TableContainer
           component={Paper}
-          sx={{ borderRadius: 1, boxShadow: 4, background: "#f5faff" }}
+          sx={(theme) => ({
+            borderRadius: 1,
+            boxShadow: 4,
+            background: theme.palette.mode === "light" ? "#f5faff" : "#18213a",
+          })}
         >
           <Table>
             <TableHead>
               <TableRow sx={{ backgroundColor: "#023562" }}>
-                <TableCell sx={{ color: "white", fontWeight: 600 }}>
+                <TableCell sx={{ color: "#fff", fontWeight: 600 }}>
                   Name
                 </TableCell>
-                <TableCell sx={{ color: "white", fontWeight: 600 }}>
+                <TableCell sx={{ color: "#fff", fontWeight: 600 }}>
                   Email
                 </TableCell>
-                <TableCell sx={{ color: "white", fontWeight: 600 }}>
+                <TableCell sx={{ color: "#fff", fontWeight: 600 }}>
                   Role
                 </TableCell>
                 <TableCell
                   align="right"
-                  sx={{ color: "white", fontWeight: 600 }}
+                  sx={{ color: "#fff", fontWeight: 600 }}
                 >
                   Actions
                 </TableCell>
@@ -114,10 +237,17 @@ const UserTable: React.FC<UserTableProps> = ({
                   <TableRow
                     key={user.id}
                     hover
-                    sx={{ borderRadius: 3, background: "#ffffff", mb: 1 }}
+                    sx={(theme) => ({
+                      borderRadius: 3,
+                      background:
+                        theme.palette.mode === "light" ? "#e3f2fd" : "#18213a",
+                      mb: 1,
+                    })}
                   >
-                    <TableCell>{user.name}</TableCell>
-                    <TableCell>{user.email}</TableCell>
+                    <TableCell sx={{ color: "inherit" }}>{user.name}</TableCell>
+                    <TableCell sx={{ color: "inherit" }}>
+                      {user.email}
+                    </TableCell>
                     <TableCell>
                       <Box
                         sx={{
@@ -127,13 +257,14 @@ const UserTable: React.FC<UserTableProps> = ({
                           borderRadius: 2,
                           background:
                             user.role === "Admin"
-                              ? "#1976d2"
+                              ? "#1976d2" // main blue
                               : user.role === "Manager"
-                              ? "#071eccff"
-                              : "#81cdf6ff",
-                          color: "white",
+                              ? "#1565c0" // darker blue
+                              : "#90caf9", // light blue
+                          color: "#fff",
                           fontWeight: 500,
                           fontSize: 13,
+                          letterSpacing: 0.5,
                         }}
                       >
                         {user.role}
@@ -141,14 +272,17 @@ const UserTable: React.FC<UserTableProps> = ({
                     </TableCell>
                     <TableCell align="right">
                       <IconButton
-                        color="primary"
-                        onClick={() => onEdit(user)}
                         aria-label="edit"
+                        onClick={() => onEdit(user)}
                         sx={{
                           borderRadius: 2,
-                          background: "#e3f2fd",
+                          background: "transparent",
+                          color: "#1976d2",
                           mr: 1,
-                          "&:hover": { background: "#bbdefb" },
+                          "&:hover": {
+                            background: "#1976d2",
+                            color: "#fff",
+                          },
                         }}
                       >
                         <EditIcon />
@@ -157,11 +291,19 @@ const UserTable: React.FC<UserTableProps> = ({
                         color="error"
                         onClick={() => onDelete(user)}
                         aria-label="delete"
-                        sx={{
+                        sx={(theme) => ({
                           borderRadius: 2,
-                          background: "#e3f2fd",
-                          "&:hover": { background: "#ffcdd2" },
-                        }}
+                          background:
+                            theme.palette.mode === "light"
+                              ? "#e3f2fd"
+                              : "#263859",
+                          "&:hover": {
+                            background:
+                              theme.palette.mode === "light"
+                                ? "#ffcdd2"
+                                : "#b71c1c",
+                          },
+                        })}
                       >
                         <DeleteIcon />
                       </IconButton>

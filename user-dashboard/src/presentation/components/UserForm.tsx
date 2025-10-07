@@ -8,6 +8,7 @@ import {
   Button,
   MenuItem,
   Stack,
+  useTheme,
 } from "@mui/material";
 import { User } from "../../domain/entities/user";
 
@@ -26,6 +27,7 @@ const UserForm: React.FC<UserFormProps> = ({
   onSubmit,
   initialData,
 }) => {
+  const theme = useTheme();
   const [formData, setFormData] = useState<User>({
     id: 0,
     name: "",
@@ -58,7 +60,13 @@ const UserForm: React.FC<UserFormProps> = ({
       onClose={onClose}
       fullWidth
       maxWidth="xs"
-      PaperProps={{ sx: { borderRadius: 4, background: "#f5faff" } }}
+      PaperProps={{
+        sx: {
+          borderRadius: 4,
+          background: theme.palette.background.paper,
+          color: theme.palette.text.primary,
+        },
+      }}
     >
       <DialogTitle
         sx={{
@@ -73,27 +81,60 @@ const UserForm: React.FC<UserFormProps> = ({
       <DialogContent>
         <Stack spacing={2} mt={1}>
           <TextField
-            label="Name"
+            label={
+              <span>
+                Name <span style={{ color: "#d32f2f" }}>*</span>
+              </span>
+            }
             value={formData.name}
             onChange={handleChange("name")}
             required
-            sx={{ borderRadius: 2, background: "#e3f2fd" }}
+            sx={{
+              borderRadius: 2,
+              background:
+                theme.palette.mode === "light" ? "#c7e0fa" : "#101624",
+              input: { color: "#fff" },
+              "& .MuiInputBase-input": { color: "#fff" },
+            }}
+            InputProps={{ style: { color: "#fff" } }}
           />
           <TextField
-            label="Email"
+            label={
+              <span>
+                Email <span style={{ color: "#d32f2f" }}>*</span>
+              </span>
+            }
             type="email"
             value={formData.email}
             onChange={handleChange("email")}
             required
-            sx={{ borderRadius: 2, background: "#e3f2fd" }}
+            sx={{
+              borderRadius: 2,
+              background:
+                theme.palette.mode === "light" ? "#c7e0fa" : "#101624",
+              input: { color: "#fff" },
+              "& .MuiInputBase-input": { color: "#fff" },
+            }}
+            InputProps={{ style: { color: "#fff" } }}
           />
           <TextField
-            label="Role"
+            label={
+              <span>
+                Role <span style={{ color: "#d32f2f" }}>*</span>
+              </span>
+            }
             select
             value={formData.role}
             onChange={handleChange("role")}
             required
-            sx={{ borderRadius: 2, background: "#e3f2fd" }}
+            sx={{
+              borderRadius: 2,
+              background:
+                theme.palette.mode === "light" ? "#c7e0fa" : "#101624",
+              input: { color: "#fff" },
+              "& .MuiInputBase-input": { color: "#fff" },
+            }}
+            InputProps={{ style: { color: "#fff" } }}
           >
             {roles.map((role) => (
               <MenuItem key={role} value={role}>

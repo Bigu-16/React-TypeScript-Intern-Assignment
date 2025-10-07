@@ -1,6 +1,8 @@
 import React, { useState } from "react";
-import { Box, Button } from "@mui/material";
+import { Box, Button, IconButton, Tooltip } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
+import Brightness4Icon from "@mui/icons-material/Brightness4";
+import Brightness7Icon from "@mui/icons-material/Brightness7";
 
 import { useUsers } from "../hooks/useUsers";
 import UserTable from "../components/UserTable";
@@ -8,7 +10,12 @@ import UserForm from "../components/UserForm";
 import ConfirmationDialog from "../components/ConfirmationDialog";
 import { User } from "../../domain/entities/user";
 
-const UserPage: React.FC = () => {
+interface UserPageProps {
+  mode: "light" | "dark";
+  setMode: (mode: "light" | "dark") => void;
+}
+
+const UserPage: React.FC<UserPageProps> = ({ mode, setMode }) => {
   const {
     users,
     loading,
@@ -64,10 +71,29 @@ const UserPage: React.FC = () => {
 
   return (
     <Box p={3}>
-      <Box display="flex" justifyContent="flex-end" mb={2}>
+      <Box
+        display="flex"
+        justifyContent="flex-end"
+        alignItems="center"
+        mb={2}
+        gap={2}
+      >
         <Button variant="contained" startIcon={<AddIcon />} onClick={handleAdd}>
           Add User
         </Button>
+        <Tooltip
+          title={
+            mode === "light" ? "Switch to dark mode" : "Switch to light mode"
+          }
+        >
+          <IconButton
+            onClick={() => setMode(mode === "light" ? "dark" : "light")}
+            color="primary"
+            aria-label="toggle dark mode"
+          >
+            {mode === "light" ? <Brightness4Icon /> : <Brightness7Icon />}
+          </IconButton>
+        </Tooltip>
       </Box>
 
       <UserTable
