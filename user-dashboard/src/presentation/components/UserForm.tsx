@@ -91,14 +91,13 @@ const UserForm: React.FC<UserFormProps> = ({
       <DialogContent>
         <Stack spacing={2} mt={1}>
           <TextField
-            label={
-              <span>
-                Name <span style={{ color: "#d32f2f" }}>*</span>
-              </span>
-            }
+            label={<span>Name </span>}
             value={formData.name}
             onChange={handleChange("name")}
             required
+            InputLabelProps={{
+              sx: { "& .MuiFormLabel-asterisk": { color: "#d32f2f" } },
+            }}
             variant="filled"
             sx={{
               borderRadius: 1,
@@ -121,15 +120,14 @@ const UserForm: React.FC<UserFormProps> = ({
             }}
           />
           <TextField
-            label={
-              <span>
-                Email <span style={{ color: "#d32f2f" }}>*</span>
-              </span>
-            }
+            label={<span>Email </span>}
             type="email"
             value={formData.email}
             onChange={handleChange("email")}
             required
+            InputLabelProps={{
+              sx: { "& .MuiFormLabel-asterisk": { color: "#d32f2f" } },
+            }}
             error={!!emailError}
             helperText={emailError}
             variant="filled"
@@ -154,15 +152,14 @@ const UserForm: React.FC<UserFormProps> = ({
             }}
           />
           <TextField
-            label={
-              <span>
-                Role <span style={{ color: "#d32f2f" }}>*</span>
-              </span>
-            }
+            label={<span>Role </span>}
             select
             value={formData.role}
             onChange={handleChange("role")}
             required
+            InputLabelProps={{
+              sx: { "& .MuiFormLabel-asterisk": { color: "#d32f2f" } },
+            }}
             variant="filled"
             sx={{
               borderRadius: 1,
@@ -196,7 +193,7 @@ const UserForm: React.FC<UserFormProps> = ({
         <Button
           onClick={onClose}
           variant="outlined"
-          color="secondary"
+          color="primary"
           sx={{ borderRadius: 1, fontWeight: 600 }}
         >
           Cancel

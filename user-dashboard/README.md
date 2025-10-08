@@ -1,46 +1,70 @@
-# Getting Started with Create React App
+# React TypeScript Intern Assignment — User Dashboard
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A modern React + TypeScript user dashboard built as an intern assignment.
 
-## Available Scripts
+Key features
 
-In the project directory, you can run:
+- React + TypeScript
+- Material UI v5 theming (light/dark)
+- LocalStorage-backed persistence
+- CRUD for users (Add / Edit / Delete)
+- Client-side pagination, sorting (name-only), and filtering by role
+- React Query and React Router available in workspace (some files scaffolded)
 
-### `npm start`
+Repository structure (important folders)
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+- user-dashboard/
+  - public/ — static assets
+  - src/
+    - core/ — constants and utilities
+    - data/ — data sources and repository implementations
+    - domain/ — entities, repositories, use-cases
+    - presentation/
+      - components/ — UI components (UserTable, UserForm, ConfirmationDialog, etc.)
+      - hooks/ — custom hooks (useUsers, React Query hooks)
+      - pages/ — top-level pages (UserPage)
+    - App.tsx — app entry (theme provider, router)
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+Getting started (local)
 
-### `npm test`
+1. Install (from repo root):
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+```powershell
+cd user-dashboard
+npm install
+```
 
-### `npm run build`
+2. Run the dev server:
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+```powershell
+npm start
+```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+3. Build for production:
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+```powershell
+npm run build
+```
 
-### `npm run eject`
+Notes
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+- The project stores user data in localStorage for persistence.
+- Client-side pagination and name-sorting are implemented in `UserTable.tsx`.
+- The theme toggle in `UserPage.tsx` switches between light/dark modes and shows icons for the current mode.
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+Developer notes
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+- To add server-side pagination, migrate `useUsers` to accept page/limit and fetch per-page with React Query.
+- If you undo my changes, keep an eye out for duplicate imports/exports in `UserTable.tsx` (this file had earlier merge issues).
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+Next steps you may want
 
-## Learn More
+- Add tests for domain/usecases and components
+- Implement server-backed APIs and replace localStorage
+- Add React Query pagination and caching
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+License
+MIT
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+
+![Dashboard screenshot](image.png)

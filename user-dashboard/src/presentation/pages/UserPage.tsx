@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Box, Button, IconButton, Tooltip } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
-import Brightness4Icon from "@mui/icons-material/Brightness4";
-import Brightness7Icon from "@mui/icons-material/Brightness7";
+import NightsStayIcon from "@mui/icons-material/NightsStay";
+import WbSunnyIcon from "@mui/icons-material/WbSunny";
 
 import { useUsers } from "../hooks/useUsers";
 import UserTable from "../components/UserTable";
@@ -70,7 +70,7 @@ const UserPage: React.FC<UserPageProps> = ({ mode, setMode }) => {
   console.log("UserPage loaded");
 
   return (
-    <Box p={3}>
+    <Box pt={6} pr={20} pl={20}>
       <Box
         display="flex"
         justifyContent="flex-end"
@@ -91,7 +91,7 @@ const UserPage: React.FC<UserPageProps> = ({ mode, setMode }) => {
             color="primary"
             aria-label="toggle dark mode"
           >
-            {mode === "light" ? <Brightness4Icon /> : <Brightness7Icon />}
+            {mode === "light" ? <NightsStayIcon /> : <WbSunnyIcon />}
           </IconButton>
         </Tooltip>
       </Box>

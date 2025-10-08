@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { ThemeProvider, CssBaseline, createTheme } from "@mui/material";
 import UserPage from "./presentation/pages/UserPage";
+import { Box } from "@mui/material";
 
 const PRIMARY_COLOR = "#023562";
 
@@ -58,7 +59,9 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <UserPage mode={mode} setMode={setMode} />
+      <Box sx={{ p: 4 }}>
+        <UserPage mode={mode} setMode={setMode} />
+      </Box>
     </ThemeProvider>
   );
 }
