@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Table,
   TableBody,
@@ -17,10 +17,12 @@ import {
   Checkbox,
   ListItemText,
   useTheme,
+  TablePagination,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import FilterListIcon from "@mui/icons-material/FilterList";
+import ImportExportIcon from "@mui/icons-material/ImportExport";
 import { User } from "../../domain/entities/user";
 import { GetUsers } from "../../domain/usecases/getUser";
 import { AddUser } from "../../domain/usecases/addUsers";
@@ -53,6 +55,10 @@ const UserTable: React.FC<UserTableProps> = ({
   );
   const [selectedRoles, setSelectedRoles] = useState<string[]>([]);
 
+  // pagination state
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+
   const handleFilterClick = (event: React.MouseEvent<HTMLElement>) => {
     setFilterAnchorEl(event.currentTarget);
   };
@@ -76,6 +82,40 @@ const UserTable: React.FC<UserTableProps> = ({
       selectedRoles.length === 0 || selectedRoles.includes(user.role);
     return matchesSearch && matchesRole;
   });
+
+  // name sorting: null = unsorted, 'asc' or 'desc'
+  const [nameSortOrder, setNameSortOrder] = useState<null | "asc" | "desc">(
+    null
+  );
+  const toggleNameSort = () => {
+    setNameSortOrder((prev) =>
+      prev === null ? "asc" : prev === "asc" ? "desc" : null
+    );
+  };
+
+  const sortedUsers = React.useMemo(() => {
+    if (!nameSortOrder) return filteredUsers;
+    return [...filteredUsers].sort((a, b) => {
+      const an = a.name.toLowerCase();
+      const bn = b.name.toLowerCase();
+      if (an < bn) return nameSortOrder === "asc" ? -1 : 1;
+      if (an > bn) return nameSortOrder === "asc" ? 1 : -1;
+      return 0;
+    });
+  }, [filteredUsers, nameSortOrder]);
+
+  // reset page when filters/search change so page is valid
+  useEffect(() => {
+    if (page > 0 && page * rowsPerPage >= filteredUsers.length) {
+      setPage(0);
+    }
+  }, [filteredUsers, page, rowsPerPage]);
+
+  // compute paginated slice from sorted list
+  const paginatedUsers = sortedUsers.slice(
+    page * rowsPerPage,
+    page * rowsPerPage + rowsPerPage
+  );
 
   return (
     <Box
@@ -111,29 +151,35 @@ const UserTable: React.FC<UserTableProps> = ({
         <Box display="flex" alignItems="center" gap={1}>
           <TextField
             size="small"
-            variant="outlined"
+            variant="standard"
             placeholder="Search by name or email..."
             value={searchTerm}
             onChange={(e) => onSearchChange(e.target.value)}
             sx={{
               width: 300,
               borderRadius: 1,
+              padding: 1,
               background:
-                theme.palette.mode === "light" ? "#e3f2fd" : "#18213a",
+          theme.palette.mode === "light" ? "#e3f2fd" : "#18213a",
               color: theme.palette.mode === "light" ? "#023562" : "#e0e0e0",
               boxShadow: 1,
               input: {
-                color: theme.palette.mode === "light" ? "#023562" : "#e0e0e0",
+          color: theme.palette.mode === "light" ? "#023562" : "#e0e0e0",
               },
               "& .MuiInputBase-input": {
-                color: theme.palette.mode === "light" ? "#023562" : "#e0e0e0",
+          color: theme.palette.mode === "light" ? "#023562" : "#e0e0e0",
               },
               "& .MuiOutlinedInput-root": { borderRadius: 1 },
+              // also ensure underline styles are not visible for standard variant
+              "& .MuiInput-underline:before, & .MuiInput-underline:after": {
+          borderBottom: "none",
+              },
             }}
             InputProps={{
+              disableUnderline: true,
               style: {
-                color: theme.palette.mode === "light" ? "#023562" : "#e0e0e0",
-                borderRadius: 1,
+          color: theme.palette.mode === "light" ? "#023562" : "#e0e0e0",
+          borderRadius: 1,
               },
             }}
           />
@@ -144,9 +190,9 @@ const UserTable: React.FC<UserTableProps> = ({
               color: theme.palette.mode === "light" ? "#1976d2" : "#90caf9",
               background: "transparent",
               "&:hover": {
-                background:
-                  theme.palette.mode === "light" ? "#bbdefb" : "#023562",
-                color: "#fff",
+          background:
+            theme.palette.mode === "light" ? "#bbdefb" : "#023562",
+          color: "#fff",
               },
             }}
             onClick={handleFilterClick}
@@ -159,10 +205,10 @@ const UserTable: React.FC<UserTableProps> = ({
             onClose={handleFilterClose}
             PaperProps={{
               sx: {
-                borderRadius: 2,
-                minWidth: 180,
-                background: theme.palette.background.paper,
-                color: theme.palette.text.primary,
+          borderRadius: 2,
+          minWidth: 180,
+          background: theme.palette.background.paper,
+          color: theme.palette.text.primary,
               },
             }}
           >
@@ -171,21 +217,21 @@ const UserTable: React.FC<UserTableProps> = ({
             </MenuItem>
             {roles.map((role) => (
               <MenuItem
-                key={role}
-                onClick={() => handleRoleToggle(role)}
-                sx={{ pl: 2 }}
+          key={role}
+          onClick={() => handleRoleToggle(role)}
+          sx={{ pl: 2 }}
               >
-                <Checkbox
-                  checked={selectedRoles.includes(role)}
-                  size="small"
-                  sx={{
-                    color: theme.palette.primary.main,
-                    "&.Mui-checked": {
-                      color: theme.palette.primary.main,
-                    },
-                  }}
-                />
-                <ListItemText primary={role} />
+          <Checkbox
+            checked={selectedRoles.includes(role)}
+            size="small"
+            sx={{
+              color: theme.palette.primary.main,
+              "&.Mui-checked": {
+                color: theme.palette.primary.main,
+              },
+            }}
+          />
+          <ListItemText primary={role} />
               </MenuItem>
             ))}
             <MenuItem
@@ -203,123 +249,172 @@ const UserTable: React.FC<UserTableProps> = ({
           <CircularProgress color="primary" />
         </Box>
       ) : (
-        <TableContainer
-          component={Paper}
-          sx={(theme) => ({
-            borderRadius: 1,
-            boxShadow: 4,
-            background: theme.palette.mode === "light" ? "#f5faff" : "#18213a",
-          })}
-        >
-          <Table>
-            <TableHead>
-              <TableRow sx={{ backgroundColor: "#023562" }}>
-                <TableCell sx={{ color: "#fff", fontWeight: 600 }}>
-                  Name
-                </TableCell>
-                <TableCell sx={{ color: "#fff", fontWeight: 600 }}>
-                  Email
-                </TableCell>
-                <TableCell sx={{ color: "#fff", fontWeight: 600 }}>
-                  Role
-                </TableCell>
-                <TableCell
-                  align="right"
-                  sx={{ color: "#fff", fontWeight: 600 }}
-                >
-                  Actions
-                </TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {filteredUsers.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={4} align="center">
-                    No users found
+        <>
+          <TableContainer
+            component={Paper}
+            sx={(theme) => ({
+              borderRadius: 1,
+              boxShadow: 4,
+              background:
+                theme.palette.mode === "light" ? "#f5faff" : "#18213a",
+            })}
+          >
+            <Table>
+              <TableHead>
+                <TableRow sx={{ backgroundColor: "#023562" }}>
+                  <TableCell
+                    sx={{
+                      color: "#fff",
+                      fontWeight: 600,
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 1,
+                    }}
+                  >
+                    <span>Name</span>
+                    <IconButton
+                      size="small"
+                      onClick={toggleNameSort}
+                      sx={{ color: "#fff", p: 0.5 }}
+                      aria-label="sort by name"
+                    >
+                      <ImportExportIcon
+                        fontSize="small"
+                        sx={{
+                          opacity: nameSortOrder ? 1 : 0.6,
+                          transform:
+                            nameSortOrder === "desc"
+                              ? "rotate(180deg)"
+                              : "none",
+                        }}
+                      />
+                    </IconButton>
+                  </TableCell>
+                  <TableCell sx={{ color: "#fff", fontWeight: 600 }}>
+                    Email
+                  </TableCell>
+                  <TableCell sx={{ color: "#fff", fontWeight: 600 }}>
+                    Role
+                  </TableCell>
+                  <TableCell
+                    align="right"
+                    sx={{ color: "#fff", fontWeight: 600 }}
+                  >
+                    Actions
                   </TableCell>
                 </TableRow>
-              ) : (
-                filteredUsers.map((user) => (
-                  <TableRow
-                    key={user.id}
-                    hover
-                    sx={(theme) => ({
-                      borderRadius: 3,
-                      background:
-                        theme.palette.mode === "light" ? "#e3f2fd" : "#18213a",
-                      mb: 1,
-                    })}
-                  >
-                    <TableCell sx={{ color: "inherit" }}>{user.name}</TableCell>
-                    <TableCell sx={{ color: "inherit" }}>
-                      {user.email}
-                    </TableCell>
-                    <TableCell>
-                      <Box
-                        sx={{
-                          display: "inline-block",
-                          px: 2,
-                          py: 0.5,
-                          borderRadius: 1,
-                          background:
-                            user.role === "Admin"
-                              ? "#1976d2" // main blue
-                              : user.role === "Manager"
-                              ? "#00509e" // more distinct blue for Manager
-                              : "#90caf9", // light blue
-                          color: "#fff",
-                          fontWeight: 500,
-                          fontSize: 13,
-                          letterSpacing: 0.5,
-                        }}
-                      >
-                        {user.role}
-                      </Box>
-                    </TableCell>
-                    <TableCell align="right">
-                      <IconButton
-                        aria-label="edit"
-                        onClick={() => onEdit(user)}
-                        sx={{
-                          borderRadius: 2,
-                          background: "transparent",
-                          color: "#1976d2",
-                          mr: 1,
-                          "&:hover": {
-                            background: "#1976d2",
-                            color: "#fff",
-                          },
-                        }}
-                      >
-                        <EditIcon />
-                      </IconButton>
-                      <IconButton
-                        color="error"
-                        onClick={() => onDelete(user)}
-                        aria-label="delete"
-                        sx={(theme) => ({
-                          borderRadius: 2,
-                          background:
-                            theme.palette.mode === "light"
-                              ? "#e3f2fd"
-                              : "#263859",
-                          "&:hover": {
-                            background:
-                              theme.palette.mode === "light"
-                                ? "#ffcdd2"
-                                : "#b71c1c",
-                          },
-                        })}
-                      >
-                        <DeleteIcon />
-                      </IconButton>
+              </TableHead>
+              <TableBody>
+                {filteredUsers.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={4} align="center">
+                      No users found
                     </TableCell>
                   </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
+                ) : (
+                  paginatedUsers.map((user) => (
+                    <TableRow
+                      key={user.id}
+                      hover
+                      sx={(theme) => ({
+                        borderRadius: 3,
+                        background:
+                          theme.palette.mode === "light"
+                            ? "#e3f2fd"
+                            : "#18213a",
+                        mb: 1,
+                      })}
+                    >
+                      <TableCell sx={{ color: "inherit" }}>
+                        {user.name}
+                      </TableCell>
+                      <TableCell sx={{ color: "inherit" }}>
+                        {user.email}
+                      </TableCell>
+                      <TableCell>
+                        <Box
+                          sx={{
+                            display: "inline-block",
+                            px: 2,
+                            py: 0.5,
+                            borderRadius: 1,
+                            background:
+                              user.role === "Admin"
+                                ? "#1976d2"
+                                : user.role === "Manager"
+                                ? "#00509e"
+                                : "#90caf9",
+                            color: "#fff",
+                            fontWeight: 500,
+                            fontSize: 13,
+                            letterSpacing: 0.5,
+                          }}
+                        >
+                          {user.role}
+                        </Box>
+                      </TableCell>
+                      <TableCell align="right">
+                        <IconButton
+                          aria-label="edit"
+                          onClick={() => onEdit(user)}
+                          sx={{
+                            borderRadius: 2,
+                            background: "transparent",
+                            color: "#1976d2",
+                            mr: 1,
+                            "&:hover": {
+                              background: "#1976d2",
+                              color: "#fff",
+                            },
+                          }}
+                        >
+                          <EditIcon />
+                        </IconButton>
+                        <IconButton
+                          color="error"
+                          onClick={() => onDelete(user)}
+                          aria-label="delete"
+                          sx={(theme) => ({
+                            borderRadius: 2,
+                            background:
+                              theme.palette.mode === "light"
+                                ? "#e3f2fd"
+                                : "#263859",
+                            "&:hover": {
+                              background:
+                                theme.palette.mode === "light"
+                                  ? "#ffcdd2"
+                                  : "#b71c1c",
+                            },
+                          })}
+                        >
+                          <DeleteIcon />
+                        </IconButton>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </TableContainer>
+
+          <Box display="flex" justifyContent="flex-end" mt={1}>
+            <TablePagination
+              component="div"
+              count={filteredUsers.length}
+              page={page}
+              onPageChange={(_, newPage) => setPage(newPage)}
+              rowsPerPage={rowsPerPage}
+              onRowsPerPageChange={(e) => {
+                const value = parseInt(e.target.value, 10);
+                setRowsPerPage(value);
+                setPage(0);
+              }}
+              rowsPerPageOptions={[5, 10, 25]}
+              labelRowsPerPage="Rows per page"
+            />
+          </Box>
+        </>
       )}
     </Box>
   );
