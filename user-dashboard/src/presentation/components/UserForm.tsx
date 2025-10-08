@@ -193,7 +193,7 @@ const UserForm: React.FC<UserFormProps> = ({
         <Button
           onClick={onClose}
           variant="outlined"
-          color="secondary"
+          color="primary"
           sx={{ borderRadius: 1, fontWeight: 600 }}
         >
           Cancel

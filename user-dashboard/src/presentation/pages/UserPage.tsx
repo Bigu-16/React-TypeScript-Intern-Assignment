@@ -70,7 +70,7 @@ const UserPage: React.FC<UserPageProps> = ({ mode, setMode }) => {
   console.log("UserPage loaded");
 
   return (
-    <Box p={3}>
+    <Box pt={6} pr={20} pl={20}>
       <Box
         display="flex"
         justifyContent="flex-end"

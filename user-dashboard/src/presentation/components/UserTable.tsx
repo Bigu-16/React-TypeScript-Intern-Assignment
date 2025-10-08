@@ -120,11 +120,11 @@ const UserTable: React.FC<UserTableProps> = ({
   return (
     <Box
       sx={(theme) => ({
-        background: theme.palette.mode === "light" ? "#e3f2fd" : "#18213a", // unified with table cell
+        background: theme.palette.mode === "light" ? "#eff8ffff" : "#18213a", // unified with table cell
         borderRadius: 1,
         p: 3,
-        boxShadow: 3,
-        border: `1.5px solid ${
+        boxShadow: 1,
+        border: `0.5 px solid ${
           theme.palette.mode === "light" ? "#1976d2" : "#023562"
         }`,
         transition: "background 0.3s, border 0.3s",
@@ -160,7 +160,7 @@ const UserTable: React.FC<UserTableProps> = ({
               borderRadius: 1,
               padding: 1,
               background:
-          theme.palette.mode === "light" ? "#e3f2fd" : "#18213a",
+          theme.palette.mode === "light" ? "#eff8ffff" : "#18213a",
               color: theme.palette.mode === "light" ? "#023562" : "#e0e0e0",
               boxShadow: 1,
               input: {
@@ -236,7 +236,7 @@ const UserTable: React.FC<UserTableProps> = ({
             ))}
             <MenuItem
               onClick={() => setSelectedRoles([])}
-              sx={{ color: theme.palette.secondary.main, fontWeight: 500 }}
+              sx={{ color: theme.palette.primary.light, fontWeight: 500 }}
             >
               Clear Filters
             </MenuItem>
@@ -254,7 +254,7 @@ const UserTable: React.FC<UserTableProps> = ({
             component={Paper}
             sx={(theme) => ({
               borderRadius: 1,
-              boxShadow: 4,
+              boxShadow: 1,
               background:
                 theme.palette.mode === "light" ? "#f5faff" : "#18213a",
             })}
@@ -320,7 +320,7 @@ const UserTable: React.FC<UserTableProps> = ({
                         borderRadius: 3,
                         background:
                           theme.palette.mode === "light"
-                            ? "#e3f2fd"
+                            ? "#eff8ffff"
                             : "#18213a",
                         mb: 1,
                       })}
